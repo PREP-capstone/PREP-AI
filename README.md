@@ -1,5 +1,5 @@
-# PREP-FE
-PREP WEB
+# PREP-AI
+PREP 카테고리 분류 AI 모델
 
 ## 🚀 Git 컨벤션 규칙
 
