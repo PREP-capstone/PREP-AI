@@ -1,0 +1,11 @@
+# 학습된 모델 체크포인트 (수백MB~GB 단위라 저장소에 올리지 않음, train.py로 재생성)
+best_healthcare_model/
+best_healthcare_model_advanced/
+best_healthcare_model_large/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
