@@ -4,6 +4,7 @@ best_healthcare_model_2line/
 best_healthcare_model_advanced/
 best_healthcare_model_large/
 *.zip
+*.onnx
 
 # Python
 __pycache__/
