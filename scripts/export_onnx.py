@@ -5,7 +5,7 @@
     <model-dir>/label_config.pt   — {"model_name", "num_category_labels", "num_function_labels", ...}
 
 사용법:
-    python export_onnx.py --model-dir best_healthcare_model_2line --out model_fp32.onnx
+    python scripts/export_onnx.py --model-dir models/best_healthcare_model_2line --out model_fp32.onnx
 
 주의: 더미 입력은 토크나이저 대신 encoder.config.vocab_size 범위의 무작위 정수로
 직접 만든다 — tokenizer_config.json의 tokenizer_class 오기재로 AutoTokenizer가
@@ -57,7 +57,7 @@ def load_checkpoint(model_dir: str) -> MultiHeadHealthcareModel:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-dir", default="best_healthcare_model_2line")
+    parser.add_argument("--model-dir", default="models/best_healthcare_model_2line")
     parser.add_argument("--out", default="model_fp32.onnx")
     parser.add_argument("--max-len", type=int, default=128)
     parser.add_argument("--opset", type=int, default=17)

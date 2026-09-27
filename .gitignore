@@ -1,8 +1,10 @@
 # 학습된 모델 체크포인트 (수백MB~GB 단위라 저장소에 올리지 않음, train.py로 재생성)
-best_healthcare_model/
+# 2026-09-27: models/ 폴더로 정리 (이전엔 저장소 루트에 바로 생성됐음).
+# best_healthcare_model_2line/ 줄은 이 커밋 시점에 진행 중이던 학습 job이
+# 아직 구버전 경로(루트)에 쓰고 있어서 과도기적으로 남겨둠 - 그 job이 끝나고
+# models/로 옮기고 나면 지워도 됨.
+models/
 best_healthcare_model_2line/
-best_healthcare_model_advanced/
-best_healthcare_model_large/
 *.zip
 *.onnx
 
