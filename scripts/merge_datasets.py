@@ -20,9 +20,9 @@ minority_candidate, labeled_by)을 제거하고, 기존 데이터셋과 동일�
 축2 값 유무와 무관하게 전부 제외하는 이전 동작으로 되돌릴 수 있습니다.
 
 사용법:
-    python merge_datasets.py \
-        --existing pilot_all_labeled_completed.csv \
-        --new google_play_apps_claude_labeled.csv \
+    python scripts/merge_datasets.py \
+        --existing data/labeled/pilot_all_labeled_completed.csv \
+        --new data/labeled/google_play_apps_claude_labeled.csv \
         --output pilot_all_labeled_merged.csv
 """
 import argparse
@@ -38,9 +38,9 @@ CSV_COLUMNS = [
 
 def main():
     parser = argparse.ArgumentParser(description="기존 데이터셋과 신규 라벨링 데이터 병합")
-    parser.add_argument("--existing", default="pilot_all_labeled_completed.csv")
-    parser.add_argument("--new", default="google_play_apps_claude_labeled.csv")
-    parser.add_argument("--output", default="pilot_all_labeled_merged.csv")
+    parser.add_argument("--existing", default="data/labeled/pilot_all_labeled_completed.csv")
+    parser.add_argument("--new", default="data/labeled/google_play_apps_claude_labeled.csv")
+    parser.add_argument("--output", default="data/labeled/pilot_all_labeled_merged.csv")
     parser.add_argument("--strict-exclude-exc", action="store_true",
                          help="EXC 행을 축2 값 유무와 무관하게 전부 제외하는 이전 동작으로 되돌림")
     args = parser.parse_args()

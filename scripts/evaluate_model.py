@@ -8,7 +8,7 @@ sklearn classification_report로 클래스별 precision/recall/F1/support를
 구분하는 데 쓴다.
 
 사용법:
-    python evaluate_model.py --model-dir best_healthcare_model_2line
+    python scripts/evaluate_model.py --model-dir models/best_healthcare_model_2line
 """
 from __future__ import annotations
 
@@ -34,8 +34,8 @@ FUNCTION_NAME_MAP = {0: "A(정보제공)", 1: "B(기록관리)", 2: "C(매칭연
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-dir", default="best_healthcare_model_2line")
-    parser.add_argument("--data", default="pilot_all_labeled_completed.csv")
+    parser.add_argument("--model-dir", default="models/best_healthcare_model_2line")
+    parser.add_argument("--data", default="data/labeled/pilot_all_labeled_completed.csv")
     parser.add_argument("--max-len", type=int, default=512)
     args = parser.parse_args()
 

@@ -17,10 +17,10 @@ GitHub 100MB/파일 제한도 걸림). 이 문서 + `export_onnx.py`/`quantize_o
 
 ```bash
 # 1. train.py로 학습된 체크포인트에서 ONNX(fp32) 추출
-python export_onnx.py --model-dir best_healthcare_model_2line --out model_fp32.onnx
+python scripts/export_onnx.py --model-dir models/best_healthcare_model_2line --out model_fp32.onnx
 
 # 2. int8 동적 양자화
-python quantize_onnx.py --in model_fp32.onnx --out model_int8.onnx
+python scripts/quantize_onnx.py --in model_fp32.onnx --out model_int8.onnx
 ```
 
 추론 시 입력은 `input_ids`/`attention_mask` (둘 다 `int64`, shape `[batch, seq_len]`)이고

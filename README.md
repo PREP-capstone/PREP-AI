@@ -1,6 +1,31 @@
 # PREP-AI
 PREP 카테고리 분류 AI 모델
 
+## 📁 폴더 구조
+
+```
+scripts/    실행 스크립트 (수집/라벨링/병합/학습/평가/ONNX 변환) — 전부 저장소 루트에서 실행
+  scrape_google_play.py       구글 플레이 앱 수집
+  predict_labels.py           학습된 모델로 라벨 사전예측(사람 검토 보조용)
+  merge_datasets.py           기존 데이터셋 + 신규 라벨링 데이터 병합
+  train.py                    멀티헤드 분류 모델 학습
+  train_large_advanced.py     대형/고급 버전 학습 실험용
+  evaluate_model.py           체크포인트 클래스별(per-class) F1 진단
+  export_onnx.py              PyTorch 체크포인트 -> ONNX 변환
+  quantize_onnx.py            ONNX int8 동적 양자화
+
+data/
+  raw/        스크래핑 원본(라벨 없음) + 모델 사전예측만 붙은 prelabeled
+  labeled/    사람 검토 완료된 라벨 데이터, pilot_all_labeled_completed.csv(현재 학습셋)
+  backups/    이전 버전 학습셋 스냅샷 (재현/비교용)
+
+models/     학습된 체크포인트 (.gitignore 대상, train.py로 재생성)
+logs/       학습 실행 로그
+docs/       라벨링 가이드, 학습 기록, ONNX 경량화 문서
+```
+
+사용 예: `python scripts/train.py`, `python scripts/merge_datasets.py --existing data/labeled/pilot_all_labeled_completed.csv ...`
+
 ## 🚀 Git 컨벤션 규칙
 
 ### Commit 규칙

@@ -86,7 +86,7 @@ class MultiHeadHealthcareModel(nn.Module):
 
 def train_model():
     # 4. 데이터 로드 및 전처리
-    df = pd.read_csv('pilot_all_labeled_completed.csv')
+    df = pd.read_csv('data/labeled/pilot_all_labeled_completed.csv')
 
     # 축1(category_id): EXC는 라벨 자체는 유지하되 손실 계산에서 무시(-100) 처리
     category_classes = sorted(int(c) for c in df['category_id'].unique() if c != 'EXC')
@@ -211,7 +211,7 @@ def train_model():
         if avg_macro_f1 > best_avg_macro_f1:
             best_avg_macro_f1 = avg_macro_f1
             epochs_without_improvement = 0
-            save_dir = './best_healthcare_model_2line'
+            save_dir = './models/best_healthcare_model_2line'
             os.makedirs(save_dir, exist_ok=True)
             torch.save(model.state_dict(), os.path.join(save_dir, 'model.pt'))
             tokenizer.save_pretrained(save_dir)
