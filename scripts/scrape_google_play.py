@@ -14,9 +14,9 @@ google-play-scraper 패키지로 플레이 스토어의 건강/의료 관련 앱
     pip install google-play-scraper
 
 실행 예시:
-    python scrape_google_play.py
-    python scrape_google_play.py --output google_play_apps_raw.csv --n-hits 30 --sleep 0.5
-    python scrape_google_play.py --keywords-file my_keywords.txt
+    python scripts/scrape_google_play.py
+    python scripts/scrape_google_play.py --output data/raw/google_play_apps_raw.csv --n-hits 30 --sleep 0.5
+    python scripts/scrape_google_play.py --keywords-file my_keywords.txt
 
 주의:
 - Google 비공식 스크래핑이라 과도한 요청 시 일시적으로 차단될 수 있습니다.
@@ -72,6 +72,10 @@ KEYWORDS = [
     # 미용/피부 (2026-09-27 추가: 기존 목록에 미용 키워드가 전무해 category_id=7
     # 표본이 극히 적었던 원인 중 하나로 확인됨)
     "피부 관리", "미용 시술 정보", "성형 정보", "뷰티 앱", "피부타입 진단",
+    # 유전자 추가 확장 (2026-09-27: "유전자"/"DNA" 단독 키워드는 조상찾기·오락성
+    # 앱이 대부분이라 질병/건강 목적이 명확한 키워드로 좁혀서 재수집)
+    "유전자검사 키트", "질병 유전자 검사", "비만 유전자검사", "탈모 유전자검사",
+    "영양유전자검사", "약물유전자검사", "암 유전자검사", "유전성질환 검사", "웰니스 유전자검사",
 ]
 
 
@@ -129,7 +133,7 @@ def fetch_app_details(app_ids, lang, country, sleep_sec):
 
 def main():
     parser = argparse.ArgumentParser(description="구글 플레이 스토어 헬스케어 앱 수집")
-    parser.add_argument("--output", default="google_play_apps_raw.csv", help="저장할 CSV 경로")
+    parser.add_argument("--output", default="data/raw/google_play_apps_raw.csv", help="저장할 CSV 경로")
     parser.add_argument("--lang", default="ko", help="검색/조회 언어 (기본: ko)")
     parser.add_argument("--country", default="kr", help="검색/조회 국가 코드 (기본: kr)")
     parser.add_argument("--n-hits", type=int, default=30, help="키워드당 최대 검색 결과 수 (기본: 30, Play 검색 API 상한도 30)")

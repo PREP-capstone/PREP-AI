@@ -46,7 +46,7 @@ class HealthcareDataset(Dataset):
 
 def train_large_model():
     # 3. 데이터 로드 및 전처리
-    df = pd.read_csv('pilot_all_labeled_completed.csv')
+    df = pd.read_csv('data/labeled/pilot_all_labeled_completed.csv')
     
     # EXC(예외) 데이터 제외
     df = df[df['category_id'] != 'EXC'].copy()
@@ -148,8 +148,8 @@ def train_large_model():
         # 최고 성능 모델 갱신 저장
         if macro_f1 > best_macro_f1:
             best_macro_f1 = macro_f1
-            model.save_pretrained('./best_healthcare_model_large')
-            tokenizer.save_pretrained('./best_healthcare_model_large')
+            model.save_pretrained('./models/best_healthcare_model_large')
+            tokenizer.save_pretrained('./models/best_healthcare_model_large')
             print(f"✨ [New Best] Large Model saved with Macro F1: {best_macro_f1:.4f}")
 
 if __name__ == "__main__":
