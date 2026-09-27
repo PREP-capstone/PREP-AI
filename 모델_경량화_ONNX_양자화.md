@@ -97,14 +97,22 @@ ONNX(fp32) ↔ ONNX(int8) 로짓을 직접 비교:
   추가로 요구한다. `dynamo=False`로 기존 TorchScript 기반 익스포터를 쓰면
   별도 설치 없이 바로 된다(단, PyTorch 2.9+에서는 legacy 경로라는
   `DeprecationWarning`이 뜬다 — 아직은 정상 동작).
-- **더미 입력에 AutoTokenizer를 쓰지 않는다** — 이 체크포인트의
-  `tokenizer_config.json`은 `tokenizer_class`가 실제 vocab(BERT WordPiece)과
-  다르게 기재돼 있어(PREP-BE `app/domain/category_classifier.py` 참고),
-  `AutoTokenizer`로 로드하면 잘못된 토크나이저가 선택될 수 있다. ONNX 변환은
-  텐서 shape/dtype만 맞으면 되므로, `export_onnx.py`는 아예 토크나이저를
-  거치지 않고 `vocab_size` 범위의 무작위 정수로 더미 입력을 만든다 — 실제
-  추론 서빙 코드(`category_classifier.py`)에서는 여전히 `BertTokenizerFast`를
-  명시적으로 써야 한다.
+- **더미 입력에 AutoTokenizer를 쓰지 않는다** — `export_onnx.py`는 텐서
+  shape/dtype만 맞으면 되므로 토크나이저를 아예 거치지 않고 `vocab_size`
+  범위의 무작위 정수로 더미 입력을 만든다. 실제 추론 서빙 코드
+  (`category_classifier.py`)에서는 `RobertaTokenizerFast.from_pretrained(
+  "klue/roberta-base")`를 명시적으로 써야 한다 — `train.py`가 학습 내내 이
+  클래스만 사용했기 때문이다.
+  **[2026-09-27 정정]** 예전 버전의 이 문서는 여기서 `BertTokenizerFast`를
+  쓰라고 안내했는데, 이는 틀린 안내였다. 실측 결과 `BertTokenizerFast`는
+  `RobertaTokenizerFast`와 완전히 다른 토큰 ID를 만들어낸다(같은 문장 기준
+  32토큰 vs 22토큰, 겹치는 값 없음) — `tokenizer_config.json`의
+  `tokenizer_class: RobertaTokenizer` 기재는 오기재가 아니라 맞는 값이었다.
+  이 잘못된 안내로 인해 PREP-BE에 배포된 카테고리 분류기가 2026-08-29부터
+  잘못된 토크나이저로 서빙됐다(축1 macro F1 0.88→0.43으로 저하, 자세한
+  내용은 [PREP-BE issue #135](https://github.com/PREP-capstone/PREP-BE/issues/135)
+  참고). category-model-v3 release부터는 `model_meta.json`도 정정해서
+  재배포했다.
 - **`quantize_dynamic`이 "pre-processing 먼저 하라"는 경고를 띄운다** —
   `onnxruntime.quantization.shape_inference` 전처리를 생략해도 위 검증에서
   보듯 정상 동작하지만, 그래프가 더 복잡해지면(분기 많은 모델 등) 전처리를
