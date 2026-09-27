@@ -1,0 +1,56 @@
+﻿Using device: cuda
+python : Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate l
+imits and faster downloads.
+At line:1 char:302
++ ... dering = 'PlainText' } catch {} } }; python train.py *> train_log.txt
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: You ar...ster downloads.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 197/197 [00:00<00:00, 6378.21it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: klue/roberta-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstrea
+m task.
+Epoch 1/10 | Loss: 2.9072 | [축1] Acc: 0.6796 F1: 0.5120 | [축2] Acc: 0.5845 
+F1: 0.4961 | Avg F1: 0.5041
+-> Best model saved with Avg Macro F1: 0.5041 (축1: 0.5120, 축2: 0.4961)
+Epoch 2/10 | Loss: 1.6742 | [축1] Acc: 0.7961 F1: 0.6859 | [축2] Acc: 0.6943 
+F1: 0.6504 | Avg F1: 0.6682
+-> Best model saved with Avg Macro F1: 0.6682 (축1: 0.6859, 축2: 0.6504)
+Epoch 3/10 | Loss: 1.2633 | [축1] Acc: 0.8350 F1: 0.8134 | [축2] Acc: 0.6892 
+F1: 0.6467 | Avg F1: 0.7301
+-> Best model saved with Avg Macro F1: 0.7301 (축1: 0.8134, 축2: 0.6467)
+Epoch 4/10 | Loss: 1.0026 | [축1] Acc: 0.8583 F1: 0.8276 | [축2] Acc: 0.7297 
+F1: 0.6923 | Avg F1: 0.7600
+-> Best model saved with Avg Macro F1: 0.7600 (축1: 0.8276, 축2: 0.6923)
+Epoch 5/10 | Loss: 0.8065 | [축1] Acc: 0.8505 F1: 0.8305 | [축2] Acc: 0.7365 
+F1: 0.7101 | Avg F1: 0.7703
+-> Best model saved with Avg Macro F1: 0.7703 (축1: 0.8305, 축2: 0.7101)
+Epoch 6/10 | Loss: 0.6806 | [축1] Acc: 0.8660 F1: 0.8516 | [축2] Acc: 0.7416 
+F1: 0.7235 | Avg F1: 0.7876
+-> Best model saved with Avg Macro F1: 0.7876 (축1: 0.8516, 축2: 0.7235)
+Epoch 7/10 | Loss: 0.5594 | [축1] Acc: 0.8699 F1: 0.8453 | [축2] Acc: 0.7483 
+F1: 0.7323 | Avg F1: 0.7888
+-> Best model saved with Avg Macro F1: 0.7888 (축1: 0.8453, 축2: 0.7323)
+Epoch 8/10 | Loss: 0.4635 | [축1] Acc: 0.8641 F1: 0.8554 | [축2] Acc: 0.7551 
+F1: 0.7375 | Avg F1: 0.7964
+-> Best model saved with Avg Macro F1: 0.7964 (축1: 0.8554, 축2: 0.7375)
+Epoch 9/10 | Loss: 0.4019 | [축1] Acc: 0.8699 F1: 0.8565 | [축2] Acc: 0.7517 
+F1: 0.7344 | Avg F1: 0.7954
+Epoch 10/10 | Loss: 0.3537 | [축1] Acc: 0.8699 F1: 0.8572 | [축2] Acc: 0.7568 
+F1: 0.7471 | Avg F1: 0.8021
+-> Best model saved with Avg Macro F1: 0.8021 (축1: 0.8572, 축2: 0.7471)

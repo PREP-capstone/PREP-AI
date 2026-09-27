@@ -6,11 +6,18 @@
 minority_candidate, labeled_by)을 제거하고, 기존 데이터셋과 동일한
 13개 컬럼만 남긴 뒤 concat합니다.
 
-기본적으로 신규 데이터 중 category_id=='EXC'인 행은 제외합니다
-(--include-exc로 포함 가능). EXC 행은 사람이 검토하지 않은 AI 초안
-판단이라, 안전하게 축1(category_id) 8종에 해당하는 행만 우선 반영합니다.
-(참고: train.py는 기존 EXC 행을 category 손실에서 ignore_index로
-자동 제외하므로, 나중에 검토 후 포함시켜도 코드 수정은 필요 없습니다.)
+축1/축2는 별도 head로 각각 학습되므로(train.py), 두 축 중 하나라도
+쓸 수 있는 값이 있으면 병합에 포함합니다.
+- category_id=='EXC' 이지만 function_type이 실제 의미있는 값인 행
+  (예: 범용 병원예약/복약알림처럼 질환 도메인은 특정되지 않아도 축2
+  기능 자체는 실재하는 경우) -> 포함. train.py가 category 손실에서
+  ignore_index로 자동 제외하므로 축1 학습은 오염되지 않고, 축2 학습에는
+  정상적으로 기여합니다.
+- category_id=='EXC' 이고 function_type도 비어있는 행(게임/카메라필터/
+  구인구직·노동매칭/전문가용 B2B 툴/쇼핑 등 완전히 무관하거나 축2 라벨도
+  형식적으로만 채운 경우) -> 두 축 모두 정보가 없으므로 완전히 제외.
+--strict-exclude-exc 옵션을 주면 이전처럼 category_id=='EXC'인 행을
+축2 값 유무와 무관하게 전부 제외하는 이전 동작으로 되돌릴 수 있습니다.
 
 사용법:
     python merge_datasets.py \
@@ -34,19 +41,27 @@ def main():
     parser.add_argument("--existing", default="pilot_all_labeled_completed.csv")
     parser.add_argument("--new", default="google_play_apps_claude_labeled.csv")
     parser.add_argument("--output", default="pilot_all_labeled_merged.csv")
-    parser.add_argument("--include-exc", action="store_true", help="신규 데이터의 EXC 행도 포함 (기본: 제외)")
+    parser.add_argument("--strict-exclude-exc", action="store_true",
+                         help="EXC 행을 축2 값 유무와 무관하게 전부 제외하는 이전 동작으로 되돌림")
     args = parser.parse_args()
 
     existing = pd.read_csv(args.existing, dtype={"category_id": str})
     new_full = pd.read_csv(args.new, dtype={"category_id": str})
-    excluded_exc = (new_full["category_id"] == "EXC").sum()
-    if not args.include_exc:
-        new_full = new_full[new_full["category_id"] != "EXC"]
+
+    is_exc = new_full["category_id"] == "EXC"
+    has_function = new_full["function_type"].notna() & (new_full["function_type"].astype(str).str.strip() != "")
+    if args.strict_exclude_exc:
+        drop_mask = is_exc
+    else:
+        drop_mask = is_exc & ~has_function
+    dropped = int(drop_mask.sum())
+    new_full = new_full[~drop_mask]
     new = new_full[CSV_COLUMNS]
 
     merged = pd.concat([existing, new], ignore_index=True)
-    if not args.include_exc:
-        print(f"신규 데이터의 EXC {excluded_exc}건은 제외했습니다 (--include-exc로 포함 가능)")
+    print(f"신규 데이터 중 병합 제외: {dropped}건"
+          + ("(--strict-exclude-exc: EXC 전부 제외)" if args.strict_exclude_exc
+             else "(EXC이면서 function_type도 없는 완전 무관 행만 제외)"))
     merged.to_csv(args.output, index=False, encoding="utf-8-sig")
 
     print(f"기존: {len(existing)}건 + 신규: {len(new)}건 = 병합: {len(merged)}건 -> '{args.output}'")
