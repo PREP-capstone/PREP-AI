@@ -1,7 +1,7 @@
 """export_onnx.py로 만든 fp32 ONNX를 동적 int8 양자화한다.
 
 사용법:
-    python quantize_onnx.py --in model_fp32.onnx --out model_int8.onnx
+    python scripts/quantize_onnx.py --in model_fp32.onnx --out model_int8.onnx
 """
 
 from __future__ import annotations

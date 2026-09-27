@@ -10,10 +10,10 @@
     pip install torch transformers
 
 사용법:
-    python predict_labels.py \
-        --input google_play_apps_raw.csv \
-        --checkpoint best_healthcare_model \
-        --output google_play_apps_prelabeled.csv
+    python scripts/predict_labels.py \
+        --input data/raw/google_play_apps_raw.csv \
+        --checkpoint models/best_healthcare_model \
+        --output data/raw/google_play_apps_prelabeled.csv
 
 주의:
 - 이 스크립트가 채우는 predicted_category_id / predicted_function_type /
@@ -71,9 +71,9 @@ def flag_minority_candidate(text):
 
 def main():
     parser = argparse.ArgumentParser(description="멀티헤드 모델로 축1/축2 사전 예측")
-    parser.add_argument("--input", default="google_play_apps_raw.csv")
+    parser.add_argument("--input", default="data/raw/google_play_apps_raw.csv")
     parser.add_argument("--checkpoint", required=True, help="학습된 모델 체크포인트 폴더 (model.pt, label_config.pt, tokenizer 포함)")
-    parser.add_argument("--output", default="google_play_apps_prelabeled.csv")
+    parser.add_argument("--output", default="data/raw/google_play_apps_prelabeled.csv")
     parser.add_argument("--max-len", type=int, default=128)
     parser.add_argument("--limit", type=int, default=None, help="테스트용: 앞에서부터 N개만 처리")
     args = parser.parse_args()

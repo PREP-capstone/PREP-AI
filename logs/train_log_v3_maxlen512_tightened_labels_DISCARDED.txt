@@ -1,0 +1,88 @@
+﻿Using device: cuda
+python : Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate l
+imits and faster downloads.
+At line:1 char:302
++ ... ing = 'PlainText' } catch {} } }; python train.py *> train_log_v3.txt
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: You ar...ster downloads.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 197/197 [00:00<00:00, 10274.53it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: klue/roberta-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstrea
+m task.
+C:\Users\DM501TGA\.claude\jobs\a9211a31\tmp\PREP-AI-work\.claude\worktrees\prep-ai-multihead\train.py:171: UserWarning:
+ Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in 
+the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skippin
+g the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-
+adjust-learning-rate
+  scheduler.step()
+Epoch 1/30 | Loss: 3.1538 | [축1] Acc: 0.4258 F1: 0.2282 | [축2] Acc: 0.5236 
+F1: 0.3424 | Avg F1: 0.2853
+-> Best model saved with Avg Macro F1: 0.2853 (축1: 0.2282, 축2: 0.3424)
+Epoch 2/30 | Loss: 2.1429 | [축1] Acc: 0.7495 F1: 0.6337 | [축2] Acc: 0.6465 
+F1: 0.6145 | Avg F1: 0.6241
+-> Best model saved with Avg Macro F1: 0.6241 (축1: 0.6337, 축2: 0.6145)
+Epoch 3/30 | Loss: 1.4734 | [축1] Acc: 0.8362 F1: 0.7290 | [축2] Acc: 0.6801 
+F1: 0.6004 | Avg F1: 0.6647
+-> Best model saved with Avg Macro F1: 0.6647 (축1: 0.7290, 축2: 0.6004)
+Epoch 4/30 | Loss: 1.1398 | [축1] Acc: 0.8536 F1: 0.8446 | [축2] Acc: 0.7020 
+F1: 0.6784 | Avg F1: 0.7615
+-> Best model saved with Avg Macro F1: 0.7615 (축1: 0.8446, 축2: 0.6784)
+Epoch 5/30 | Loss: 0.9602 | [축1] Acc: 0.8497 F1: 0.8186 | [축2] Acc: 0.7407 
+F1: 0.7056 | Avg F1: 0.7621
+-> Best model saved with Avg Macro F1: 0.7621 (축1: 0.8186, 축2: 0.7056)
+Epoch 6/30 | Loss: 0.7753 | [축1] Acc: 0.8613 F1: 0.8371 | [축2] Acc: 0.7441 
+F1: 0.7298 | Avg F1: 0.7835
+-> Best model saved with Avg Macro F1: 0.7835 (축1: 0.8371, 축2: 0.7298)
+Epoch 7/30 | Loss: 0.6318 | [축1] Acc: 0.8748 F1: 0.8649 | [축2] Acc: 0.7458 
+F1: 0.7137 | Avg F1: 0.7893
+-> Best model saved with Avg Macro F1: 0.7893 (축1: 0.8649, 축2: 0.7137)
+Epoch 8/30 | Loss: 0.5547 | [축1] Acc: 0.8825 F1: 0.8685 | [축2] Acc: 0.7576 
+F1: 0.7408 | Avg F1: 0.8047
+-> Best model saved with Avg Macro F1: 0.8047 (축1: 0.8685, 축2: 0.7408)
+Epoch 9/30 | Loss: 0.4573 | [축1] Acc: 0.8632 F1: 0.8358 | [축2] Acc: 0.7626 
+F1: 0.7359 | Avg F1: 0.7858
+-> 1/5 에폭 연속 개선 없음
+Epoch 10/30 | Loss: 0.3724 | [축1] Acc: 0.8767 F1: 0.8411 | [축2] Acc: 0.7593 
+F1: 0.7475 | Avg F1: 0.7943
+-> 2/5 에폭 연속 개선 없음
+Epoch 11/30 | Loss: 0.3520 | [축1] Acc: 0.8844 F1: 0.8684 | [축2] Acc: 0.7357 
+F1: 0.7208 | Avg F1: 0.7946
+-> 3/5 에폭 연속 개선 없음
+Epoch 12/30 | Loss: 0.3106 | [축1] Acc: 0.8805 F1: 0.8649 | [축2] Acc: 0.7492 
+F1: 0.7317 | Avg F1: 0.7983
+-> 4/5 에폭 연속 개선 없음
+Epoch 13/30 | Loss: 0.2719 | [축1] Acc: 0.8844 F1: 0.8671 | [축2] Acc: 0.7677 
+F1: 0.7596 | Avg F1: 0.8134
+-> Best model saved with Avg Macro F1: 0.8134 (축1: 0.8671, 축2: 0.7596)
+Epoch 14/30 | Loss: 0.2496 | [축1] Acc: 0.8882 F1: 0.8721 | [축2] Acc: 0.7559 
+F1: 0.7405 | Avg F1: 0.8063
+-> 1/5 에폭 연속 개선 없음
+Epoch 15/30 | Loss: 0.2326 | [축1] Acc: 0.8844 F1: 0.8667 | [축2] Acc: 0.7542 
+F1: 0.7340 | Avg F1: 0.8003
+-> 2/5 에폭 연속 개선 없음
+Epoch 16/30 | Loss: 0.2018 | [축1] Acc: 0.8709 F1: 0.8355 | [축2] Acc: 0.7761 
+F1: 0.7601 | Avg F1: 0.7978
+-> 3/5 에폭 연속 개선 없음
+Epoch 17/30 | Loss: 0.1625 | [축1] Acc: 0.8844 F1: 0.8605 | [축2] Acc: 0.7593 
+F1: 0.7424 | Avg F1: 0.8014
+-> 4/5 에폭 연속 개선 없음
+Epoch 18/30 | Loss: 0.1503 | [축1] Acc: 0.8882 F1: 0.8538 | [축2] Acc: 0.7626 
+F1: 0.7462 | Avg F1: 0.8000
+-> 5/5 에폭 연속 개선 없음
+Early stopping: 5에폭 연속 개선 없어 18에폭에서 학습 중단
