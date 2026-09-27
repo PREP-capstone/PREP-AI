@@ -1,4 +1,5 @@
 import os
+import random
 from rich import print
 import torch
 import torch.nn as nn
@@ -9,6 +10,13 @@ from sklearn.metrics import f1_score, accuracy_score
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, AutoModel, RobertaTokenizerFast, get_linear_schedule_with_warmup
 from torch.optim import AdamW
+
+# 0. 재현성을 위한 랜덤시드 고정
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed_all(SEED)
 
 # 1. 디바이스 설정 (GPU 가속 확인)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -24,7 +32,7 @@ CATEGORY_IGNORE_INDEX = -100
 
 # 2. 데이터셋 클래스 정의 (텍스트 + 수집 데이터 결합 전처리, 축1/축2 동시 라벨링)
 class HealthcareDataset(Dataset):
-    def __init__(self, df, tokenizer, max_len=128):
+    def __init__(self, df, tokenizer, max_len=512):
         self.texts = df['combined_text'].values
         self.category_labels = df['category_label'].values      # 축1: 0~N-1, EXC는 -100
         self.function_labels = df['function_label'].values      # 축2: 0~3
@@ -118,14 +126,20 @@ def train_model():
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=16)
 
-    # 6. 학습 설정 (설계서 반영: AdamW, LR 2e-5, Early Stopping 등)
+    # 6. 학습 설정 (설계서 반영: AdamW, LR 2e-5, Early Stopping)
     optimizer = AdamW(model.parameters(), lr=2e-5, weight_decay=0.01)
-    epochs = 10
+    epochs = 30  # 상한. 실제로는 아래 Early Stopping이 patience 초과 시 더 일찍 멈춤
+    early_stop_patience = 5
+    epochs_without_improvement = 0
     total_steps = len(train_loader) * epochs
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=int(total_steps * 0.1), num_training_steps=total_steps)
 
     category_criterion = nn.CrossEntropyLoss(ignore_index=CATEGORY_IGNORE_INDEX)
     function_criterion = nn.CrossEntropyLoss()
+
+    # max_len을 128->512로 늘리면서 스텝당 연산량이 커진 것을 보완하기 위한 Mixed Precision
+    use_amp = device.type == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
 
     best_avg_macro_f1 = 0.0
 
@@ -142,16 +156,18 @@ def train_model():
             category_labels = batch['category_labels'].to(device)
             function_labels = batch['function_labels'].to(device)
 
-            category_logits, function_logits = model(input_ids, attention_mask)
-
-            loss_category = category_criterion(category_logits, category_labels)
-            loss_function = function_criterion(function_logits, function_labels)
-            loss = loss_category + loss_function
+            with torch.amp.autocast("cuda", enabled=use_amp):
+                category_logits, function_logits = model(input_ids, attention_mask)
+                loss_category = category_criterion(category_logits, category_labels)
+                loss_function = function_criterion(function_logits, function_labels)
+                loss = loss_category + loss_function
             total_loss += loss.item()
 
-            loss.backward()
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient Clipping
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
             scheduler.step()
 
         # 검증(Validation) - 축1/축2 각각 Macro F1 계산 (축1은 EXC=-100 제외)
@@ -166,7 +182,8 @@ def train_model():
                 category_labels = batch['category_labels'].to(device)
                 function_labels = batch['function_labels'].to(device)
 
-                category_logits, function_logits = model(input_ids, attention_mask)
+                with torch.amp.autocast("cuda", enabled=use_amp):
+                    category_logits, function_logits = model(input_ids, attention_mask)
                 cat_pred = torch.argmax(category_logits, dim=1)
                 func_pred = torch.argmax(function_logits, dim=1)
 
@@ -193,6 +210,7 @@ def train_model():
         # 최고 성능 모델 저장 (Checkpoint) - 두 축의 평균 Macro F1 기준
         if avg_macro_f1 > best_avg_macro_f1:
             best_avg_macro_f1 = avg_macro_f1
+            epochs_without_improvement = 0
             save_dir = './best_healthcare_model_2line'
             os.makedirs(save_dir, exist_ok=True)
             torch.save(model.state_dict(), os.path.join(save_dir, 'model.pt'))
@@ -208,6 +226,12 @@ def train_model():
                 os.path.join(save_dir, 'label_config.pt'),
             )
             print(f"-> Best model saved with Avg Macro F1: {best_avg_macro_f1:.4f} (축1: {cat_macro_f1:.4f}, 축2: {func_macro_f1:.4f})")
+        else:
+            epochs_without_improvement += 1
+            print(f"-> {epochs_without_improvement}/{early_stop_patience} 에폭 연속 개선 없음")
+            if epochs_without_improvement >= early_stop_patience:
+                print(f"Early stopping: {early_stop_patience}에폭 연속 개선 없어 {epoch+1}에폭에서 학습 중단")
+                break
 
 
 if __name__ == "__main__":
